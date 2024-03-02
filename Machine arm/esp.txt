@@ -1,0 +1,230 @@
+#include <SoftwareSerial.h>
+#include <Servo.h>
+
+Servo myservo1;  // create servo object to control a servo
+Servo myservo2;
+Servo myservo3;
+Servo myservo4;
+Servo myservo5;
+
+SoftwareSerial mySerial(13, 12); // RX, TX，接esp的Tx,Rx
+
+void setup() {
+  Serial.begin(115200); 
+  Serial.println("Hello,serial!");
+
+  // set the data rate for the SoftwareSerial port
+  mySerial.begin(115200);
+  mySerial.println("AT");
+   myservo1.attach(9);  // attaches the servo on pin 9 to the servo object
+ 
+  myservo2.attach(8);
+  myservo3.attach(7);
+  myservo4.attach(6);
+  myservo5.attach(5);
+}
+void servo1(int x)
+{
+  int pos = myservo1.read();
+  int angle = x - pos;
+  int counter = 0;
+  if (angle >= 0)
+  {
+    for (counter = 0; counter <= angle; counter++)
+    {
+      myservo1.write(pos + counter);
+      delay(15);
+
+    }
+
+  }
+  if (angle < 0)
+  {
+    for (counter = 0; counter >= angle; counter--)
+    {
+      myservo1.write(pos + counter);
+      delay(15);
+
+    }
+
+  }
+
+}
+void servo2(int x)
+{
+  int pos = myservo2.read();
+  int angle = x - pos;
+  int counter = 0;
+  if (angle >= 0)
+  {
+    for (counter = 0; counter <= angle; counter++)
+    {
+      myservo2.write(pos + counter);
+      delay(30);
+
+    }
+
+  }
+  if (angle < 0)
+  {
+    for (counter = 0; counter >= angle; counter--)
+    {
+      myservo2.write(pos + counter);
+      delay(30);
+
+    }
+
+  }
+
+}
+
+void servo3(int x)
+{
+   if(x<30)
+  {x=30;} 
+  int pos = myservo3.read();
+  int angle = x - pos;
+  int counter = 0;
+  if (angle >= 0)
+  {
+    for (counter = 0; counter <= angle; counter++)
+    {
+      myservo3.write(pos + counter);
+      delay(30);
+
+    }
+
+  }
+  if (angle < 0)
+  {
+    for (counter = 0; counter >= angle; counter--)
+    {
+      myservo3.write(pos + counter);
+      delay(30);
+
+    }
+
+  }
+
+}
+
+void servo4(int x)
+{
+  if(x<30)
+  {x=30;}
+  int pos = myservo4.read();
+  int angle = x - pos;
+  int counter = 0;
+  if (angle >= 0)
+  {
+    for (counter = 0; counter <= angle; counter++)
+    {
+      myservo4.write(pos + counter);
+      delay(15);
+
+    }
+
+  }
+  if (angle < 0)
+  {
+    for (counter = 0; counter >= angle; counter--)
+    {
+      myservo4.write(pos + counter);
+      delay(15);
+
+    }
+
+  }
+
+}
+
+void servo5(int x)
+{
+  if(x>90)
+  {x=90;}
+  int pos = myservo5.read();
+  int angle = x - pos;
+  int counter = 0;
+  if (angle >= 0)
+  {
+    for (counter = 0; counter <= angle; counter++)
+    {
+      myservo5.write(pos + counter);
+      delay(10);
+
+    }
+
+  }
+  if (angle < 0)
+  {
+    for (counter = 0; counter >= angle; counter--)
+    {
+      myservo5.write(pos + counter);
+      delay(10);
+
+    }
+
+  }
+
+}
+
+void loop() { // run over and over
+  while (mySerial.available()>0) {
+    digitalWrite(2,HIGH);
+    char c=mySerial.read();
+     int a1;
+   int a2;
+   int a3;
+   int a4;
+   int a5;
+   switch (c)
+   {
+    case'a':
+    a1=mySerial.parseInt();
+    
+   servo1(a1);
+    Serial.print("a1:");
+    Serial.println(a1);
+    break;
+    case 'b':
+    a2=mySerial.parseInt();
+       servo2(a2);
+        Serial.print("a2:");
+    Serial.println(a2);
+    break;
+    case 'c':
+    a3=mySerial.parseInt();
+   servo3(a3);
+    Serial.print("a3:");
+    Serial.println(a3);
+    break;
+    case 'd':
+    a4=mySerial.parseInt();
+   servo4(a4);
+    Serial.print("a4:");
+    Serial.println(a4);
+    break;
+     case 'f':
+    a5=mySerial.parseInt();
+   servo5(a5);
+    Serial.print("a5:");
+    Serial.println(a5);
+    break;
+   case 'e':
+    servo5(5);
+    servo4(180);
+    servo3(90);
+    servo2(90);
+    
+    servo1(0);
+    servo5(90);
+    servo1(90);
+    servo2(90);
+    servo3(90);
+    servo4(90);
+    digitalWrite(2,LOW);
+    
+    break; 
+  }}
+
+}//将其中的结束符调为NL和CR 波特率调为115200 发送AT时会收到回复OK

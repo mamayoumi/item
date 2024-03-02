@@ -1,0 +1,19 @@
+# depslib dependency file v1.0
+1670418274 source:d:\test\ok1\main.cpp
+	"graphics.h"
+	<stdio.h>
+	<stdlib.h>
+	<windows.h>
+	<conio.h>
+	<time.h>
+	<mmsystem.h>
+
+1670493829 source:c:\users\lenovo\desktop\ok1\main.cpp
+	"graphics.h"
+	<stdio.h>
+	<stdlib.h>
+	<windows.h>
+	<conio.h>
+	<time.h>
+	<mmsystem.h>
+

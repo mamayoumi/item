@@ -1,0 +1,455 @@
+#include "graphics.h"
+#include <stdio.h>
+#include <stdlib.h>
+#include <windows.h>
+#include <conio.h>
+#include <time.h>
+
+void movesnake(int j);
+void sweep(int *x,int *y);
+struct Snake
+{
+    int x[100];
+    int y[100];
+    int len;
+    int derect[100];
+} snake;
+
+struct Food
+{
+    int x;
+    int y;
+    int a;
+
+
+} f[100];
+
+struct Well
+{
+    int x;
+    int y;
+    int len;
+    int derect;
+}well[10];
+
+void creatfood(int i);
+void eat(int x);
+void creatwell();
+int rule();
+
+
+int main()
+{
+    snake.derect[0]='s';
+    snake.x[0]=30;
+    snake.y[0]=30;
+    snake.len=1;
+    int counter;
+    int j=0;
+    int flag=1;
+    f[0].a=1;
+    for(counter=1; counter<100; counter++)
+    {
+        f[counter].a=0;
+    }
+    initgraph(640, 480);
+    setbkcolor(BLUE);
+    setcolor(GREEN);
+    setfillcolor(RED);
+    circle(snake.x[0],snake.y[0],10);
+    floodfill(snake.x[0], snake.y[0], GREEN);
+
+    creatwell();
+    creatfood(0);
+    int i;
+    while(flag)
+    {
+        movesnake(snake.len);
+        for(i=0; i<10; i++)
+        {
+            Sleep(100);
+            if(kbhit())
+            {
+                break;
+            }
+        }
+        flag=rule();
+
+        eat(j);
+        for(; j<100; j++)
+        {
+            if(f[j].a==0)
+            {
+                creatfood(j+1);
+                f[j+1].a=1;
+                j++;
+                break;
+            }
+            break;
+        }
+    }
+        //--------------------------//
+        while(!kbhit())
+        {
+            Sleep(100);
+        }
+      closegraph();
+    return 0;
+
+
+}
+void movesnake(int j)
+{
+    int i;
+    int x=snake.x[0];
+    int y= snake.y[0];
+    if(kbhit())
+    {
+        fflush(stdin);
+        snake.derect[0]=getch();
+
+        setcolor(BLUE);
+        setfillcolor(BLUE);
+        circle(snake.x[0],snake.y[0],10);
+        floodfill(snake.x[0], snake.y[0], GREEN);
+        switch(snake.derect[0])
+        {
+        case 'w':
+        case 'W':
+            snake.y[0]-=20;
+            break;
+        case 's':
+        case 'S':
+            snake.y[0]+=20;
+            break;
+        case 'A':
+        case 'a':
+            snake.x[0]-=20;
+            break;
+        case 'd':
+        case 'D':
+            snake.x[0]+=20 ;
+            break;
+        }
+
+    }
+    else
+    {
+
+        setcolor(BLUE);
+        setfillcolor(BLUE);
+        circle(snake.x[0],snake.y[0],10);
+        floodfill(snake.x[0], snake.y[0], BLUE);
+        switch(snake.derect[0])
+        {
+
+        case 'w':
+        case 'W':
+
+            snake.y[0]-=20;
+            break;
+        case 's':
+        case 'S':
+            snake.y[0]+=20;
+            break;
+        case 'A':
+        case 'a':
+            snake.x[0]-=20;
+            break;
+        case 'd':
+        case 'D':
+            snake.x[0]+=20;
+            break;
+        }
+
+    }
+
+
+     for(i=2; i<=j; i++)
+    {
+     sweep(&snake.x[i-1],&x);
+      sweep(&snake.y[i-1],&y);
+    setcolor(BLUE);
+    setfillcolor(BLUE);
+    circle(x,y,10);
+    floodfill(x, y, BLUE);
+    }
+     setcolor(GREEN);
+    setfillcolor(RED);
+    circle(snake.x[0],snake.y[0],10);
+    floodfill(snake.x[0], snake.y[0], GREEN);
+   for(i=1;i<=snake.len-1;i++)
+   {
+        setcolor(GREEN);
+    setfillcolor(YELLOW);
+    circle(snake.x[i],snake.y[i],10);
+    floodfill(snake.x[i], snake.y[i], GREEN);
+
+   }
+
+}
+
+void creatfood(int i)
+{
+    srand(time(NULL));
+
+
+
+    f[i].x =(rand()%29)*20+30;
+    f[i].y = (rand()%21)*20+30;
+    int counter;
+    int k;
+    int counter2;
+
+    for(counter=0; counter<snake.len; counter++)
+    {
+        for(k=0;k<10;k++)
+         {
+
+            if(k<5){
+                    for(counter2=0;counter2<well[k].len;counter2++){
+            while((f[i].x==snake.x[counter]&&f[i].y==snake.y[counter])||(f[i].x==well[k].x+counter2*20&&f[i].y==well[k].y))
+            {
+                srand(time(NULL)+1);
+                f[i].x =(rand()%29)*20+30;
+                f[i].y = (rand()%21)*20+30;
+            }
+                    }
+            }
+            else
+            {
+                for(counter2=0;counter2<well[k].len;counter2++){
+                while((f[i].x==snake.x[counter]&&f[i].y==snake.y[counter])||(f[i].x==well[k].x&&f[i].y==well[k].y+counter2*20))
+            {
+                srand(time(NULL)+1);
+                f[i].x =(rand()%29)*20+30;
+                f[i].y = (rand()%21)*20+30;
+            }
+                }
+            }
+         }
+
+
+    }
+
+    setcolor(GREEN);
+    setfillcolor(WHITE);
+    circle(f[i].x,f[i].y,10);
+    floodfill(f[i].x, f[i].y, GREEN);
+}
+void eat(int x)
+{
+    if(snake.x[0]==f[x].x&&snake.y[0]==f[x].y)
+    {
+        f[x].a=0;
+        snake.len=snake.len+1;
+        snake.derect[snake.len-1]=snake.derect[snake.len-2];
+        switch(snake.derect[snake.len-2])
+        {
+        case 'w':
+        case 'W':
+            snake.x[snake.len-1]=snake.x[snake.len-2];
+            snake.y[snake.len-1]=snake.y[snake.len-2]+20;
+            break;
+        case 's':
+        case 'S':
+           snake.x[snake.len-1]=snake.x[snake.len-2];
+            snake.y[snake.len-1]=snake.y[snake.len-2]-20;
+        case 'A':
+        case 'a':
+           snake.x[snake.len-1]=snake.x[snake.len-2]+20;
+            snake.y[snake.len-1]=snake.y[snake.len-2];
+            break;
+        case 'd':
+        case 'D':
+           snake.x[snake.len-1]=snake.x[snake.len-2]-20;
+            snake.y[snake.len-1]=snake.y[snake.len-2];
+            break;
+        }
+    setcolor(GREEN);
+    setfillcolor(YELLOW);
+    circle(snake.x[snake.len-1],snake.y[snake.len-1],10);
+    floodfill(snake.x[snake.len-1],snake.y[snake.len-1],GREEN);
+
+
+    }
+}
+
+
+void sweep(int *x,int *y)
+{
+    int tmp;
+	tmp=*x;//tmp£½a
+	*x=*y;//a£½b
+	*y=tmp;//b£½tmp
+}
+
+void creatwell()
+{
+     srand(time(NULL));
+     int counter;
+
+     int counter2;
+     for(counter=0;counter<5;counter++)
+     {
+         srand(time(NULL)+counter);
+       well[counter]. x =(rand()%29)*20+30;
+        well[counter]. y  = (rand()%21)*20+30;
+         well[counter]. len=rand()%5+2;
+        for(counter2=0;counter2<well[counter]. len;counter2++)
+        {
+
+         setcolor(GREEN);
+    setfillcolor(BLACK);
+    circle(well[counter].x +counter2*20,well[counter].y,10);
+    floodfill(well[counter].x +counter2*20,well[counter].y,GREEN);
+        }
+
+
+
+     }
+      for(counter=5;counter<10;counter++)
+     {
+         srand(time(NULL)+counter+5);
+       well[counter]. x=(rand()%29)*20+30;
+       well[counter].y = (rand()%21)*20+30;
+        well[counter]. len=rand()%5+2;
+        for(counter2=0;counter2<well[counter]. len;counter2++)
+        {
+
+         setcolor(GREEN);
+    setfillcolor(BLACK);
+    circle(well[counter].x ,well[counter].y+counter2*20,10);
+    floodfill(well[counter].x ,well[counter].y+counter2*20,GREEN);
+        }
+
+
+
+     }
+
+}
+
+int rule()
+{
+    int i;
+    int counter;
+
+    for(i=0;i<5;i++)
+    {
+        for(counter=0;counter<well[i].len;counter++)
+        {
+            if(snake.x[0]==well[i].x+counter*20&&snake.y[0]==well[i].y)
+            {
+                cleardevice();
+
+                setfont(100,0,"幼圆");
+                outtextxy(100,100,"GAME OVER");
+                setfont(50,0,"幼圆");
+                outtextxy(50,350,"PRESS ANY KEY TO CONTINUE");
+                setfont(50,0,"幼圆");
+                outtextxy(100,250,"GRADE:");
+                setfont(50,0,"幼圆");
+                xyprintf(250,250,"%d",snake.len);
+                return 0;
+
+            }
+        }
+
+    }
+    for(i=5;i<10;i++)
+    {
+        for(counter=0;counter<well[i].len;counter++)
+        {
+            if(snake.x[0]==well[i].x&&snake.y[0]==well[i].y+counter*20)
+            {
+                cleardevice();
+
+                setfont(100,0,"幼圆");
+
+                outtextxy(100,100,"GAME OVER");
+                setfont(50,0,"幼圆");
+                outtextxy(50,350,"PRESS ANY KEY TO CONTINUE");
+                setfont(50,0,"幼圆");
+                outtextxy(100,250,"GRADE:");
+                setfont(50,0,"幼圆");
+                xyprintf(250,250,"%d",snake.len);
+                return 0;
+
+            }
+        }
+
+    }
+    if(snake.x[0]<0||snake.x[0]>640||snake.y[0]<0||snake.y[0]>480)
+    {
+        cleardevice();
+
+                setfont(100,0,"幼圆");
+
+                outtextxy(100,100,"GAME OVER");
+                setfont(50,0,"幼圆");
+                outtextxy(50,350,"PRESS ANY KEY TO CONTINUE");
+                setfont(50,0,"幼圆");
+                outtextxy(100,250,"GRADE:");
+                setfont(50,0,"幼圆");
+                xyprintf(250,250,"%d",snake.len);
+                return 0;
+    }
+    int counter2;
+    for(counter2=1;counter2<snake.len;counter2++)
+    {
+        if(snake.x[0]==snake.x[counter2]&&snake.y[0]==snake.y[counter2])
+        {
+            cleardevice();
+
+                setfont(100,0,"幼圆");
+
+                outtextxy(100,100,"GAME OVER");
+                setfont(50,0,"幼圆");
+                outtextxy(50,350,"PRESS ANY KEY TO CONTINUE");
+                 setfont(50,0,"幼圆");
+                outtextxy(100,250,"GRADE:");
+                setfont(50,0,"幼圆");
+                xyprintf(250,250,"%d",snake.len);
+                return 0;
+        }
+    }
+    return 1;
+}
+
+
+void rule()
+{
+    int i;
+    int counter;
+    for(i=0;i<5;i++)
+    {
+        for(counter=0;counter<well[i].len;counter++)
+        {
+            if(snake.x[0]==well[i].x+counter*20&&snake.y[0]==well[i].y)
+            {
+                cleardevice();
+                setcolor(WHITE);
+                setbkmode(YELLOW);
+                setfont(100,0,"Romantic");
+                xyprintf(100,100,"GAME OVER");
+            }
+        }
+
+    }
+    for(i=5;i<10;i++)
+    {
+        for(counter=0;counter<well[i].len;counter++)
+        {
+            if(snake.x[0]==well[i].x&&snake.y[0]==well[i].y+counter*20)
+            {
+                cleardevice();
+                setcolor(WHITE);
+                setbkmode(YELLOW);
+                setfont(100,0,"Romantic");
+
+                xyprintf(100,100,"GAME OVER");
+            }
+        }
+
+    }
+}

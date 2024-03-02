@@ -1,0 +1,44 @@
+import cv2
+import numpy as np
+
+from time import sleep
+import time
+
+faceCascade = cv2.CascadeClassifier("xml/cascade.xml")
+capture = cv2.VideoCapture(0)
+
+time_start=time.time()
+while(True):
+    # 获取一帧
+    ret, frame = capture.read()
+    # 将这帧转换为灰度图
+
+
+    frame = cv2.flip(frame, 1)
+    h1, w1 = frame.shape[:2]
+    gray = cv2.cvtColor(frame, cv2.COLOR_BGR2GRAY)
+    time_end=time.time()
+    if time_end-time_start>5:
+
+
+        face1 = faceCascade.detectMultiScale(gray, 1.1, 4)
+        for (x, y, w, h) in face1 :
+           cv2.rectangle(frame, (x, y), (x + w, y + h), (255, 0, 0), 2)
+           i=(x+w/2)/w1*17.5+13.5
+           j=(y+h/2)/h1*12
+           cv2.putText(frame, str(i), (x, y),
+                   cv2.FONT_HERSHEY_TRIPLEX, 1.0, (255, 0, 0), 2)
+           cv2.putText(frame, str(j), (x+w, y+h), cv2.FONT_HERSHEY_TRIPLEX, 1.0, (0, 255, 0), 2)
+
+            # 将编号好的数据存到变量send_data中，注：encode(encoding='utf-8)是将数据转换成utf-8的格式发送给服务器
+
+           print(j)
+           print(i)
+
+           time_start = time.time()
+    cv2.imshow('frame', frame)
+    c = cv2.waitKey(5) & 0xff
+    if c == 27:
+        # 释放所有窗口
+        cv2.destroyAllWindows()
+        break

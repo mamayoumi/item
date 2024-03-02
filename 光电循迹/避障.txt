@@ -1,0 +1,197 @@
+#include <MsTimer2.h>
+
+#define PWML 6
+#define PWMR 5
+#define INL4 11
+#define INL3 10
+#define INL2 9
+#define INL1 8
+#define PERIOD 50
+const int TrigPin1 = 2;
+const int EchoPin1 = 3;
+const int TrigPin2 = 4;
+const int EchoPin2 = 7;
+#define TrigPin3 15
+#define EchoPin3  14
+long int di1;
+long int di2;
+long int di3;
+void setup() {
+  Serial.begin(9600);
+  pinMode(PWML, OUTPUT);
+  pinMode(INL2, OUTPUT);
+  pinMode(INL1, OUTPUT);
+  pinMode(TrigPin1, OUTPUT);
+  pinMode(EchoPin1, INPUT);
+  pinMode(TrigPin2, OUTPUT);
+  pinMode(EchoPin2, INPUT);
+  pinMode(TrigPin3, OUTPUT);
+  pinMode(EchoPin3, INPUT);
+   
+}
+
+
+float readdis()
+{
+di1=dis1();//正
+di2=dis2();//左
+di3=dis3();//右
+int total=1;
+int num=1;
+if (di1<15)
+{
+ total+=0;
+ num++; 
+  }  
+ if (di2<20)
+{
+ total+=3;
+ num++; 
+ } 
+
+  if (di3<20)
+{
+ total+=-6;
+ num++; 
+}  
+return (float)total/(float)num;
+  
+}
+void control()
+{
+  float con=readdis();
+  if (abs(con-1)<0.01)//前进
+  {
+     digitalWrite(INL3, LOW); //双轮前进
+  digitalWrite(INL4, HIGH);
+  analogWrite(PWML, 100);
+  digitalWrite(INL1, LOW);
+  digitalWrite(INL2, HIGH);
+  analogWrite(PWMR, 100);
+    
+    }
+ if (abs(con-2)<0.01)
+  {
+     digitalWrite(INL3, LOW); //原地左转
+  digitalWrite(INL4, HIGH);
+  analogWrite(PWML, 100);
+  digitalWrite(INL2, LOW);
+  digitalWrite(INL1, HIGH);
+  analogWrite(PWMR, 100);
+    }
+
+ if (abs(con+2.5)<0.01)
+  {
+     digitalWrite(INL4, LOW); //原地右转
+  digitalWrite(INL3, HIGH);
+  analogWrite(PWML, 100);
+  digitalWrite(INL1, LOW);
+  digitalWrite(INL2, HIGH);
+  analogWrite(PWMR, 100);
+    }
+
+     if (abs(con-4.0/3)<0.01)
+  {
+     digitalWrite(INL4, LOW); //倒退右转
+  digitalWrite(INL3, HIGH);
+  analogWrite(PWML, 70);
+  digitalWrite(INL2, LOW);
+  digitalWrite(INL1, HIGH);
+  analogWrite(PWMR, 100);
+    
+    }
+
+     if (abs(con+5.0/3)<0.01)
+  {
+     digitalWrite(INL4, LOW); //倒退左转
+  digitalWrite(INL3, HIGH);
+  analogWrite(PWML, 100);
+  digitalWrite(INL2, LOW);
+  digitalWrite(INL1, HIGH);
+  analogWrite(PWMR, 70);
+    
+    }
+
+
+ if (abs(con-0.5)<0.01)
+  {
+     digitalWrite(INL4, LOW); //原地右转
+  digitalWrite(INL3, HIGH);
+  analogWrite(PWML, 20);
+  digitalWrite(INL1, LOW);
+  digitalWrite(INL2, HIGH);
+  analogWrite(PWMR, 100);
+    }
+
+     if ((abs(con+2/3)<0.01)||(abs(con+0.5)<0.01))
+  {
+     digitalWrite(INL4, LOW); //倒退
+  digitalWrite(INL3, HIGH);
+  analogWrite(PWML, 100);
+  digitalWrite(INL2, LOW);
+  digitalWrite(INL1, HIGH);
+  analogWrite(PWMR, 100);
+    
+    }
+
+    
+    
+ // digitalWrite(INL3, LOW); //双轮前进
+  //digitalWrite(INL4, HIGH);
+  //analogWrite(PWML, v);
+  //digitalWrite(INL1, LOW);
+  //digitalWrite(INL2, HIGH);
+ // analogWrite(PWMR, v);
+
+}
+
+long int dis2()
+{
+  digitalWrite(TrigPin2, LOW);
+  delayMicroseconds(2);
+  digitalWrite(TrigPin2, HIGH);
+  delayMicroseconds(10);
+  digitalWrite(TrigPin2, LOW);
+  long int cm;
+  cm = pulseIn(EchoPin2, HIGH) / 58.0; //算成厘米
+  return cm;
+}
+
+long int dis3()
+{
+  digitalWrite(TrigPin3, LOW);
+  delayMicroseconds(2);
+  digitalWrite(TrigPin3, HIGH);
+  delayMicroseconds(10);
+  digitalWrite(TrigPin3, LOW);
+  long int cm;
+  cm = pulseIn(EchoPin3, HIGH) / 58.0; //算成厘米
+  return cm;
+}
+long int dis1()
+{
+  digitalWrite(TrigPin1, LOW);
+  delayMicroseconds(2);
+  digitalWrite(TrigPin1, HIGH);
+  delayMicroseconds(10);
+  digitalWrite(TrigPin1, LOW);
+  long int cm;
+  cm = pulseIn(EchoPin1, HIGH) / 58.0; //算成厘米
+  return cm;
+}
+
+void loop() {
+
+if(digitalRead(2)==HIGH)
+{
+digitalWrite(INL3, LOW); //双轮前进
+  digitalWrite(INL4, HIGH);
+  analogWrite(PWML, 0);
+  digitalWrite(INL1, LOW);
+  digitalWrite(INL2, HIGH);
+  analogWrite(PWMR, 0);
+}
+else
+{control();
+}
+}

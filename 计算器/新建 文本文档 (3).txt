@@ -1,0 +1,316 @@
+​
+彻底优化之前800行的劣质计算器，使用后缀表达式丘中缀表达式值
+
+有几个逻辑搞明白后简单很多
+
+前置栈相关
+自己写的模板栈
+
+//定义链表节点
+template <class elment>
+struct Lnode
+{
+	elment date;
+	Lnode* next;
+};
+
+
+//栈模板
+//带头结点链表实现栈操作
+//pop get_top empty返回值均为bool类型
+// push无类型限制
+//动态分配内存记得释放
+template <class elment>
+class stack
+{
+public:
+	stack();
+	bool empty();
+	bool pop(elment& data);
+	bool get_top(elment& data);
+	void push(elment data);
+	~stack();
+private:
+	Lnode<elment>* top;
+};
+
+
+//默认构造函数
+template <class elment>
+stack<elment>::stack()
+{
+	top = new Lnode<elment>;
+	top->next = NULL;
+}
+
+//判空操作
+template <class elment>
+bool stack<elment>::empty()
+{
+	return top->next == NULL;
+}
+
+//出栈操作
+template <class elment>
+bool stack<elment>::pop(elment& data)
+{
+	if (!this->empty())
+	{
+		Lnode<elment>* p = top->next;
+		data = p->date;
+		top->next = p->next;
+		delete p;
+		return true;
+	}
+	else
+	{
+		return false;
+	}
+}
+
+//查询栈顶元素操作
+template <class elment>
+bool stack<elment>::get_top(elment& data)
+{
+	if (!this->empty())
+	{
+		data = top->next->date;
+		return true;
+	}
+	else
+	{
+		return false;
+	}
+}
+
+
+//入栈操作
+template <class elment>
+void stack<elment>::push(elment data)
+{
+	Lnode<elment>* pnew = new Lnode<elment>;
+	pnew->next = top->next;
+	pnew->date = data;
+	top->next = pnew;
+}
+
+
+//析构函数释放内存
+template <class elment>
+stack<elment>::~stack()
+{
+	Lnode<elment>* p = top->next;
+	while ( p!= NULL)
+	{
+		top->next = p->next;
+		delete p;
+		p = top->next;
+	}
+	delete top;
+}
+
+正确的表达式规则
+对于一个正确的表达式必须有：
+
+操作符号前必须是数字
+
+左括号前不能是数字
+
+右括号前必须是数字
+
+必须以数字结尾
+
+后缀表达式
+后缀表达式：
+
+将两个数字间的操作符放到两个数字后即后缀表达式
+
+1+2 转为1 2 +   ，1 2 +即为后缀表达式，与一般表达式相比省去了括号方便计算机计算
+
+后缀表达式不同于一般表达式的区别即没有括号，而括号是会影响运算顺序的
+
+所以要将一般表达式转为后缀表达式需要提前知道操作符号计算顺序
+
+另外后缀表达式 A B+ ,A B顺序是不能改变的，比如A B-,代表A-B不能是B-A
+
+将操作符号左侧的数字记作左操作数，右侧记为右操作数
+
+一个后缀表达式可以计算出具体的结果
+
+如何求后缀表达式值
+根据上面的规则可以知道一个操作符号在后缀表达式前肯定有两个操作数
+
+从左向右读后缀表达式（因为操作符号再数字后，先读数字再度操作符才能操作）
+
+读到操作符则提取前面两个操作数进行计算，之后将结果替换原本后缀表达式中的本次子表达式
+
+15 7 1 1 + - / 3 * 2 1 1 + + -
+
+计算过程如下：
+
+15 7 2 - / 3 * 2 1 1 + + -
+
+15 5 / 3 * 2 1 1 + + -
+
+3 3 * 2 1 1 + + -
+
+9 2 1 1 + + -
+
+9 2 2+ -
+
+9 4 -
+
+5
+
+可以使用栈操作完成上述过程
+
+读取后缀表达式，遇到数字则压入数字栈，
+
+遇到操作符则数字栈弹出两个数字进行相关计算，最后将结果压入数字栈
+
+，最后数字栈顶元素即为结果
+
+//后缀表达式求值
+//之间用空格隔开
+//中间操作可以封装一个懒得弄了
+bool postfix_calculator(string postfix, double& res)
+{
+	bool isnumber = false;
+	int number_start = 0;
+	stack<double> number_stack;
+	for (int pos = 0; pos < postfix.length(); pos++)
+	{
+		if ((postfix[pos] >= 48 && postfix[pos] < 58)&&!isnumber)
+		{
+			isnumber = true;
+			number_start = pos;
+		}
+		else if (isnumber && postfix[pos] == ' ')
+		{
+			string fix = postfix.substr(number_start, pos - number_start);
+			double number;
+			if (string2double(fix, number))
+			{
+				number_stack.push(number);
+				isnumber = false;
+			}
+			else
+			{
+				return false;
+			}
+		}
+		else if (postfix[pos] == '+')
+		{
+			double left;
+			double right;
+			if (number_stack.pop(right) && number_stack.pop(left))
+			{
+				number_stack.push(left + right);
+			}
+			else
+			{
+				return false;
+			}
+		}
+		else if (postfix[pos] == '-')
+		{
+			double left;
+			double right;
+			if (number_stack.pop(right) && number_stack.pop(left))
+			{
+				number_stack.push(left - right);
+			}
+			else
+			{
+				return false;
+			}
+		}
+		else if (postfix[pos] == '*')
+		{
+			double left;
+			double right;
+			if (number_stack.pop(right) && number_stack.pop(left))
+			{
+				number_stack.push(left * right);
+			}
+			else
+			{
+				return false;
+			}
+		}
+		else if (postfix[pos] == '/')
+		{
+			double left;
+			double right;
+			if (number_stack.pop(right) && number_stack.pop(left))
+			{
+				number_stack.push(left / right);
+			}
+			else
+			{
+				return false;
+			}
+		}
+		else if (postfix[pos] == ' ')
+		{
+			continue;
+		}
+		else
+		{
+			return false;
+		}
+	
+	}
+	if (number_stack.pop(res)&& number_stack.empty())
+	{
+		return true;
+	}
+	else
+	{
+		return false;
+	}
+	return false;
+}
+
+如何转后缀表达式
+上面说到后缀表达式没有括号需要提前知道操作顺序
+
+1+2*（5-2）-3
+
+可以转为 1 2 5 2  - * + 3 -
+
+也可以转为1 2 5 2  - *  3 - +
+
+虽然上面都一样结果，但第二种减号实际上出现再一般表达式中位值更靠后，而遍历时当然不希望出现先遍历后面再看前面的操作
+
+所以指定一个规则：优先计算左侧出现的操作符，因为遍历是从左侧开始的
+
+同时左侧的数字无论那种表达式都在左边，即数字出现顺序不变，
+
+假设A B 在一般表达式中A 在左侧
+
+若后缀表达式中B 在左侧，与A 相对于B是左操作数相悖，假设不成立
+
+这段我写的可能语言不太对，就是数字出现顺序不变
+
+采用优先计算左侧出现的操作符，这样转化的后缀表达式操作符出现顺序即为计算顺序
+
+1+2-4
+
+可以为1 2+ 4 -  也可以为1 2 4- +
+
+关于后缀表达式求值即相关性质这里不在介绍
+
+后缀表达式可以直接用栈操作求值
+
+讲一下怎么转后缀表达式，首先乘除的优先级是高于加减的，
+
+将操作符号左侧的数字记为左操作数，右侧则为右操作数，
+
+每个操作数是都要和两侧（开始结束除外）的操作符进行加减乘除操作的，
+
+后缀表达式采用优先计算左侧出现的操作符比较方便，
+
+一个数字只知道左侧操作符是无法进行压入后缀表达式的
+
+​

@@ -1,0 +1,966 @@
+#include <graphics.h>
+
+int main()
+{
+     int x ,y;
+     int flag=1;
+     initgraph(600,600);
+     setbkcolor(WHITE);
+     setfillcolor(BLACK);
+     bar(100,300,500,500);
+     setfont(200, 0, "幼圆");
+     setcolor(BLUE);
+     setbkmode(TRANSPARENT);
+     outtextxy(100, 300, "PLAY");
+     bool mark=false;
+     mouse_msg msg={0};
+    for (;flag; delay_fps(60))
+    {
+
+        while (mousemsg())
+        {
+            msg=getmouse();
+
+
+            if(msg.is_left())
+            {
+                if( msg.is_down())
+                {
+
+                    x = msg.x;
+                    y= msg.y;
+
+                    mark=((100<x)&&(x<500)&&(300<y)&&(y<500));
+                }
+
+
+                else
+                {
+                    if(mark)
+                    {
+                        flag=0;
+                    }
+                }
+            }
+        }
+
+
+    }
+
+     closegraph();
+    return 0;
+}
+
+
+
+
+
+
+
+
+//
+  int x ,y;
+     int flag=1;
+
+     setbkcolor(WHITE);
+     setfillcolor(BLACK);
+     bar(100,300,500,500);
+     setfont(200, 0, "幼圆");
+     setcolor(BLUE);
+     setbkmode(TRANSPARENT);
+     outtextxy(100, 300, "PLAY");
+          bool mark=false;
+     mouse_msg msg={0};
+    for (;flag; delay_fps(60))
+    {
+
+        while (mousemsg())
+        {
+            msg=getmouse();
+
+
+            if(msg.is_left())
+            {
+                if( msg.is_down())
+                {
+
+                    x = msg.x;
+                    y= msg.y;
+
+                   mark=((100<x)&&(x<500)&&(300<y)&&(y<500));
+
+                }
+            if( msg.is_up()&&mark)
+            {
+                flag=0;
+                goto endless;
+            }
+
+
+
+            }
+        }
+
+
+    }
+endless:
+  setbkcolor(BLUE);
+  cleardevice();
+
+}
+//
+
+
+// PIMAGE pic;
+ pic=newimage(20,20);
+ getimage(pic,"dj.png");
+  resize (pic,20,20);
+//
+
+
+
+
+
+//
+ initgraph(600,600);
+    PIMAGE pic;
+    pic=newimage(20,20);
+    PIMAGE temp;
+    temp=newimage();
+
+    getimage(temp,"dj.png");
+    int tempwidth =getwidth(temp);
+    int temphigh= getheight(temp);
+
+    putimage(pic,0,0,20,20,temp,0,0,tempwidth,temphigh);
+    putimage(0,0,pic);
+    delimage(temp);
+    temp = NULL;
+    getch();
+    closegraph();
+//
+
+
+
+
+//
+#include <graphics.h>
+
+int main()
+{
+
+      initgraph(440,500);
+      PIMAGE pic;
+      pic=newimage();
+      getimage(pic,"speed.jpg");
+      putimage(0,0,pic);
+
+
+      PIMAGE pic1;
+      pic1=newimage(20,20);
+
+       PIMAGE temp;
+     temp=newimage();
+
+     getimage(temp,"button.jpg");
+    int tempwidth =getwidth(temp);
+    int temphigh= getheight(temp);
+
+    putimage(pic1,0,0,20,20,temp,0,0,tempwidth,temphigh);
+
+    delimage(temp);
+    temp = NULL;
+    setcolor(YELLOW);
+
+    line(50,460,390,460);
+    putimage(40,450,pic1);
+
+
+
+     int x ,y;
+     int flag=1;
+
+     bool mark =false;
+
+     mouse_msg msg={0};
+    for (;flag; delay_fps(60))
+    {
+
+        while (mousemsg())
+        {
+            msg=getmouse();
+
+
+           if(msg.is_left()&&msg.is_down())
+            {
+
+
+                    x = msg.x;
+                    y= msg.y;
+
+               mark=true;
+
+
+            }
+
+            if(y<=470&&y>=450&&mark)
+                    {putimage(0,0,pic);
+                    setcolor(YELLOW);
+
+                    line(50,460,390,460);
+                    putimage(x,450,pic1);}
+
+        }
+
+
+    }
+
+
+
+
+      getch();
+      closegraph();
+      return 0;
+
+
+
+
+}
+//
+#include <graphics.h>
+
+int main()
+{
+
+      initgraph(440,500);
+      PIMAGE pic;
+      pic=newimage();
+      getimage(pic,"speed.jpg");
+      putimage(0,0,pic);
+
+
+      PIMAGE pic1;
+      pic1=newimage(20,20);
+
+       PIMAGE temp;
+     temp=newimage();
+
+     getimage(temp,"button.jpg");
+    int tempwidth =getwidth(temp);
+    int temphigh= getheight(temp);
+
+    putimage(pic1,0,0,20,20,temp,0,0,tempwidth,temphigh);
+
+    delimage(temp);
+    temp = NULL;
+    setcolor(YELLOW);
+
+    line(50,460,390,460);
+    putimage(40,450,pic1);
+
+
+
+     int x ,y;
+     int flag=1;
+
+
+bool mark =true;
+
+    for (;flag; delay_fps(60))
+    {
+ mouse_msg msg={0};
+        while (mousemsg()&&mark)
+        {
+            msg=getmouse();
+            if(msg.is_left()&&msg.is_down())
+            {
+                mark=false;
+            }
+            }
+
+
+           if(msg.is_move())
+            {
+
+
+                    x = msg.x;
+                    y= msg.y;
+
+              if(y<=470&&y>=450)
+                    {putimage(0,0,pic);
+                    setcolor(YELLOW);
+
+                    line(50,460,390,460);
+                    putimage(x,450,pic1);}
+
+
+
+            }
+
+
+#include <graphics.h>
+#include <cmath>
+
+struct Circle
+{
+    int x, y;
+    double radius;
+    int edge;
+};
+
+void draw(const Circle& c)
+{
+    setfillcolor(EGEARGB(0xFF, 0xa0, 0x00, 0xa0));
+    ege_fillellipse(c.x - c.radius - c.edge, c.y - c.radius - c.edge, 2 * (c.radius + c.edge), 2 * (c.radius  + c.edge));
+    setfillcolor(EGEARGB(0xFF, 0xFF, 0x33, 0xFF));
+    ege_fillellipse(c.x - c.radius, c.y - c.radius, c.radius * 2, c.radius * 2);
+}
+
+int main()
+{
+    initgraph(640, 480, INIT_RENDERMANUAL);
+    setbkcolor(WHITE);
+    delay_ms(0);
+    setcolor(BLACK);
+    setfont(20, 0, "楷体");
+    setbkmode(TRANSPARENT);
+    //开启抗锯齿
+    ege_enable_aa(true);
+
+    const int N = 3;
+    Circle circles[N] =
+    {
+        {100, 240, 80.0, 10 },
+        {300, 240, 80.0, 10},
+        {500, 240, 80.0, 10}
+    };
+    int xBase, yBase;				//记录鼠标左键点击的位置
+    int checkid = -1;
+
+    bool redraw = true;
+
+    for (; is_run(); delay_fps(60))
+    {
+        while (mousemsg())
+        {
+            mouse_msg msg = getmouse();
+
+            //鼠标左键点击位置记录
+            if (msg.is_move() )
+            {
+                if (checkid != -1)
+                {
+                    //移动
+
+                    //根据基点和当前位置移动物体
+                    circles[checkid].x += msg.x - xBase;
+                    circles[checkid].y += msg.y - yBase;
+
+                    //缩放
+
+
+                    //操作后，改变基点
+                    xBase = msg.x;
+                    yBase = msg.y;
+                    redraw = true;
+                }
+            }
+            else if (msg.is_left())
+            {
+                if (msg.is_down())
+                {
+                    //设置基点为点击位置
+                    xBase = msg.x;
+                    yBase = msg.y;
+
+                    //对每个物体进行检测，
+                    for (int i = 0; i < N; i++)
+                    {
+                        int dist = (xBase - circles[i].x) * (xBase - circles[i].x) + (yBase - circles[i].y) * (yBase - circles[i].y);
+
+                        //移动选中(内圆)
+                        if (dist < circles[i].radius * circles[i].radius)
+                        {
+
+                            checkid = i;
+                            break;
+                        }
+                        
+                    }
+                }
+                else
+                {
+                    //动作标志位复位
+                    checkid = -1;
+
+                }
+            }
+        }
+
+
+
+        //重绘
+        if (redraw)
+        {
+            redraw = false;
+            cleardevice();
+            for (int i = N -1 ; i >= 0; i--)
+                draw(circles[i]);
+            setcolor(BLACK);
+            outtextxy(300, 0, "拖动内圆移动，拖动外环调整大小");
+            outtextxy(300, 22, "按空格键重置位置及大小");
+        }
+    }
+
+    closegraph();
+
+    return 0;
+}
+
+//
+#include <graphics.h>
+
+int main()
+{
+
+      initgraph(440,500);
+      PIMAGE pic;
+      pic=newimage();
+      getimage(pic,"speed.jpg");
+      putimage(0,0,pic);
+
+
+      PIMAGE pic1;
+      pic1=newimage(20,20);
+
+       PIMAGE temp;
+     temp=newimage();
+
+     getimage(temp,"button.jpg");
+    int tempwidth =getwidth(temp);
+    int temphigh= getheight(temp);
+
+    putimage(pic1,0,0,20,20,temp,0,0,tempwidth,temphigh);
+
+    delimage(temp);
+    temp = NULL;
+    setcolor(YELLOW);
+
+    line(50,460,390,460);
+    putimage(40,450,pic1);
+
+
+
+     int x ,y;
+     int flag=1;
+int picx=40;
+
+bool mark =true;
+mouse_msg msg={0};
+    for (; flag; delay_fps(60))
+    {
+
+        while (mousemsg())
+        {
+            msg=getmouse();
+
+            if(msg.is_move())
+
+            {
+                if(!mark)
+                {
+                    picx=msg.x;
+                       x = msg.x;
+                    y= msg.y;
+
+              if(y<=470&&y>=450)
+                    {putimage(0,0,pic);
+                    setcolor(YELLOW);
+
+                    line(50,460,390,460);
+                    putimage(x,450,pic1);}
+                }
+            }
+            else if(msg.is_left()&&msg.is_down())
+            {
+                x=msg.x;
+                 y= msg.y;
+                if(picx<=x&&x<=picx+20&&450<=y&&y<=470)
+                {
+                    mark=false;
+                    break;
+                }
+                else{mark=true;}
+            }
+        }
+    }
+
+
+
+      getch();
+      closegraph();
+      return 0;
+
+
+
+
+}
+
+
+
+        }
+
+
+
+
+
+
+
+      getch();
+      closegraph();
+      return 0;
+
+
+
+
+}
+//
+for (; is_run(); delay_fps(60)) {	
+		while (mousemsg()) {
+			mouse_msg msg = getmouse();
+
+			//鼠标左键点击位置记录			
+			if (msg.is_move() ) {
+				
+			}
+			else if (msg.is_left()) {
+				if (msg.is_down()) {
+					//设置基点为点击位置
+					xBase = msg.x;
+					yBase = msg.y;
+
+					//对每个物体进行检测，
+					
+				}
+				else {
+					//动作标志位复位
+					checkid = -1;
+					move_flag = zoom_flag = false;
+				}
+			}
+		}
+
+		//空格键重置
+		while (kbmsg()) {
+			key_msg msg = getkey();
+			if (msg.key == key_space && msg.msg == key_msg_down) {
+				for (int i = 0; i < N; i++) {
+					circles[i].x = 100 + i * 200;
+					circles[i].y = 240;
+					circles[i].radius = 80.0;
+				}
+				zoom_flag = move_flag = false;
+				redraw = true;
+			}
+		}
+
+		//重绘
+		if (redraw) {
+			redraw = false;
+			cleardevice();
+			for (int i = N -1 ; i >= 0; i--)
+				draw(circles[i]);
+			setcolor(BLACK);
+			outtextxy(300, 0, "拖动内圆移动，拖动外环调整大小");
+			outtextxy(300, 22, "按空格键重置位置及大小");
+		}
+	}
+
+#include <graphics.h>
+#include <cmath>
+
+struct Circle
+{
+	int x, y;
+	double radius;
+	int edge;
+};
+
+void draw(const Circle& c)
+{
+	setfillcolor(EGEARGB(0xFF, 0xa0, 0x00, 0xa0));
+	ege_fillellipse(c.x - c.radius - c.edge, c.y - c.radius - c.edge, 2 * (c.radius + c.edge), 2 * (c.radius  + c.edge));
+	setfillcolor(EGEARGB(0xFF, 0xFF, 0x33, 0xFF));
+	ege_fillellipse(c.x - c.radius, c.y - c.radius, c.radius * 2, c.radius * 2);
+}
+
+int main()
+{
+	initgraph(640, 480, INIT_RENDERMANUAL);
+	setbkcolor(WHITE);
+	delay_ms(0);
+	setcolor(BLACK);
+	setfont(20, 0, "楷体");
+	setbkmode(TRANSPARENT);
+	//开启抗锯齿
+	ege_enable_aa(true);
+
+	const int N = 3;
+	Circle circles[N] = {
+		{100, 240, 80.0, 10 },
+		{300, 240, 80.0, 10},
+		{500, 240, 80.0, 10}
+	};
+	int xBase, yBase;				//记录鼠标左键点击的位置
+	int checkid = -1;
+	bool move_flag = false, zoom_flag = false;
+	bool redraw = true;
+
+	for (; is_run(); delay_fps(60)) {	
+		while (mousemsg()) {
+			mouse_msg msg = getmouse();
+
+			//鼠标左键点击位置记录			
+			if (msg.is_move() ) {
+				if (checkid != -1) {
+					//移动
+					
+						//根据基点和当前位置移动物体
+						circles[checkid].x += msg.x - xBase;
+						circles[checkid].y += msg.y - yBase;
+
+					//操作后，改变基点
+					xBase = msg.x;
+					yBase = msg.y;
+					redraw = true;
+				}
+			}
+			else if (msg.is_left()) {
+				if (msg.is_down()) {
+					//设置基点为点击位置
+					xBase = msg.x;
+					yBase = msg.y;
+
+					//对每个物体进行检测，
+					for (int i = 0; i < N; i++) {
+						int dist = (xBase - circles[i].x) * (xBase - circles[i].x) + (yBase - circles[i].y) * (yBase - circles[i].y);
+
+						//移动选中(内圆)
+						if (dist < circles[i].radius * circles[i].radius) {
+							
+							checkid = i;
+							break;
+						}
+						//缩放选中(外环)
+						
+					}
+				}
+				else {
+					//动作标志位复位
+					checkid = -1;
+					move_flag = zoom_flag = false;
+				}
+			}
+		}
+
+		//空格键重置
+		while (kbmsg()) {
+			key_msg msg = getkey();
+			if (msg.key == key_space && msg.msg == key_msg_down) {
+				for (int i = 0; i < N; i++) {
+					circles[i].x = 100 + i * 200;
+					circles[i].y = 240;
+					circles[i].radius = 80.0;
+				}
+				zoom_flag = move_flag = false;
+				redraw = true;
+			}
+		}
+
+		//重绘
+		if (redraw) {
+			redraw = false;
+			cleardevice();
+			for (int i = N -1 ; i >= 0; i--)
+				draw(circles[i]);
+			setcolor(BLACK);
+			outtextxy(300, 0, "拖动内圆移动，拖动外环调整大小");
+			outtextxy(300, 22, "按空格键重置位置及大小");
+		}
+	}
+
+	closegraph();
+
+	return 0;
+}
+//、
+#include <graphics.h>
+
+int main()
+{
+
+      initgraph(440,500);
+      PIMAGE pic;
+      pic=newimage();
+      getimage(pic,"speed.jpg");
+      putimage(0,0,pic);
+
+
+      PIMAGE pic1;
+      pic1=newimage(20,20);
+
+       PIMAGE temp;
+     temp=newimage();
+
+     getimage(temp,"button.jpg");
+    int tempwidth =getwidth(temp);
+    int temphigh= getheight(temp);
+
+    putimage(pic1,0,0,20,20,temp,0,0,tempwidth,temphigh);
+
+    delimage(temp);
+    temp = NULL;
+    setcolor(YELLOW);
+
+    line(50,460,390,460);
+    putimage(40,450,pic1);
+
+
+
+     int x ,y;
+     int flag=1;
+int picx=40;
+
+bool mark =true;
+bool paint =true;
+mouse_msg msg={0};
+    for (; flag; delay_fps(60))
+    {
+
+        while (mousemsg())
+        {
+            msg=getmouse();
+
+            if(msg.is_move())
+
+            {
+                if(!mark)
+                {
+                    picx=msg.x;
+                       x = msg.x;
+                    y= msg.y;
+
+              paint =true;
+                }
+            }
+            else if(msg.is_left()&&msg.is_down())
+            {
+                x=msg.x;
+                 y= msg.y;
+                if(picx<=x&&x<=picx+20&&450<=y&&y<=470)
+                {
+                    mark=false;
+                    break;
+                }
+                else{mark=true;}
+            }
+
+            if (paint)
+            {
+                putimage(0,0,pic);
+                    setcolor(YELLOW);
+
+                    line(50,460,390,460);
+                    putimage(picx,450,pic1);
+            }
+
+        }
+    }
+
+
+
+      getch();
+      closegraph();
+      return 0;
+
+
+
+
+}
+
+
+
+#include <graphics.h>
+
+int main()
+{
+
+    initgraph(440,500);
+    PIMAGE pic;
+    pic=newimage();
+    getimage(pic,"speed.jpg");
+    putimage(0,0,pic);
+
+
+    PIMAGE pic1;
+    pic1=newimage(20,20);
+
+    PIMAGE temp;
+    temp=newimage();
+
+    getimage(temp,"button.jpg");
+    int tempwidth =getwidth(temp);
+    int temphigh= getheight(temp);
+
+    putimage(pic1,0,0,20,20,temp,0,0,tempwidth,temphigh);
+
+    delimage(temp);
+    temp = NULL;
+    setcolor(YELLOW);
+
+    line(50,460,390,460);
+    putimage(40,450,pic1);
+
+    setbkcolor(WHITE);
+	delay_ms(0);
+	setcolor(BLACK);
+	setfont(50, 0, "幼圆");
+	setbkmode(TRANSPARENT);
+
+    int x,y;
+    int flag=1;
+    int picx=40;
+    int diffculty;
+
+    bool mark =true;
+    bool paint =true;
+    mouse_msg msg= {0};
+    for (; flag; delay_fps(60))
+    {
+
+        while (mousemsg())
+        {
+            msg=getmouse();
+
+            if(msg.is_move())
+
+            {
+                if(!mark)
+                {
+                    picx=msg.x;
+                    x = msg.x;
+                    y= msg.y;
+
+                    paint =true;
+                }
+            }
+            else if(msg.is_left())
+            {
+                if(msg.is_down())
+                {
+                    x=msg.x;
+                    y= msg.y;
+                    if(picx<=x&&x<=picx+20&&450<=y&&y<=470)
+                    {
+                        mark=false;
+                        break;
+                    }
+                }
+                else
+                {
+                    mark=true;
+
+                }
+            }
+
+            if (paint)
+            {
+                putimage(0,0,pic);
+                setcolor(YELLOW);
+                diffculty=picx/36;
+                line(50,460,390,460);
+                putimage(picx,450,pic1);
+                outtextxy(100, 00, "diffculty");
+
+                xyprintf(250,150,"%d",diffculty);
+
+            }
+
+        }
+    }
+
+    getch();
+    closegraph();
+    return 0;
+
+
+}
+
+//srand(time(NULL));
+
+    f[i].x =(rand()%29)*20+30;
+    f[i].y = (rand()%21)*20+30;
+    int counter;
+    int k;
+bool mark1=true;
+bool mark2=true;
+bool mark3=true;
+bool mark4=true;
+
+
+    while(mark1&&mark2&&mark3&&mark4)
+    {
+        for(counter=0; counter<snake.len; counter++)
+        {
+            if(f[i].x==snake.x[counter]&&f[i].y==snake.y[counter])
+            {
+                mark3=false;
+                goto judge;
+            }
+        }
+        for(k=0; k<5; k++)
+        {
+            if(f[i].y==well[k].y)
+            {
+                while(f[i].x<=well[k].x+(well[k].len-1)*20&&(f[i].x>=well[k].x))
+                {
+                    mark1=false;
+                    goto judge;
+                }
+            }
+        }
+
+        for(k=5; k<10; k++)
+        {
+            if(f[i].x==well[k].x)
+            {
+                while(f[i].y<=well[k].y+(well[k].len-1)*20&&f[i].y>=well[k].y)
+                {
+                    mark2=false;
+                     goto judge;
+                }
+            }
+        }
+        if(mark1&&mark2&&mark3)
+        {
+            mark4=false;
+        }
+judge:
+        if(!mark1||!mark2||!mark3)
+        {
+
+            srand(time(NULL)+1);
+            f[i].x =(rand()%29)*20+30;
+            f[i].y = (rand()%21)*20+30;
+            mark1=true;
+            mark2=true;
+            mark3=true;
+        }
+    }
+
+    setcolor(GREEN);
+    setfillcolor(WHITE);
+    circle(f[i].x,f[i].y,10);
+    floodfill(f[i].x, f[i].y, GREEN);
+
+

@@ -1,0 +1,218 @@
+#include <Servo.h>
+
+Servo myservo1;  // create servo object to control a servo
+Servo myservo2;
+Servo myservo3;
+Servo myservo4;
+Servo myservo5;
+
+// twelve servo objects can be created on most boards
+
+float l1 = 8.5;
+float l2 = 10.5;
+float l3 = 9.5;
+float l4 = 14.5;
+
+void setup() {
+  myservo1.attach(9);  // attaches the servo on pin 9 to the servo object
+  Serial.begin(9600);
+  myservo2.attach(8);
+  myservo3.attach(7);
+  myservo4.attach(6);
+  myservo5.attach(5);
+}
+
+void servo1(int x)
+{
+  int pos = myservo1.read();
+  int angle = x - pos;
+  int counter = 0;
+  if (angle >= 0)
+  {
+    for (counter = 0; counter <= angle; counter++)
+    {
+      myservo1.write(pos + counter);
+      delay(15);
+
+    }
+
+  }
+  if (angle < 0)
+  {
+    for (counter = 0; counter >= angle; counter--)
+    {
+      myservo1.write(pos + counter);
+      delay(15);
+
+    }
+
+  }
+
+}
+void servo2(int x)
+{
+  int pos = myservo2.read();
+  int angle = x - pos;
+  int counter = 0;
+  if (angle >= 0)
+  {
+    for (counter = 0; counter <= angle; counter++)
+    {
+      myservo2.write(pos + counter);
+      delay(30);
+
+    }
+
+  }
+  if (angle < 0)
+  {
+    for (counter = 0; counter >= angle; counter--)
+    {
+      myservo2.write(pos + counter);
+      delay(30);
+
+    }
+
+  }
+
+}
+
+void servo3(int x)
+{
+  int pos = myservo3.read();
+  int angle = x - pos;
+  int counter = 0;
+  if (angle >= 0)
+  {
+    for (counter = 0; counter <= angle; counter++)
+    {
+      myservo3.write(pos + counter);
+      delay(30);
+
+    }
+
+  }
+  if (angle < 0)
+  {
+    for (counter = 0; counter >= angle; counter--)
+    {
+      myservo3.write(pos + counter);
+      delay(30);
+
+    }
+
+  }
+
+}
+
+void servo4(int x)
+{
+  int pos = myservo4.read();
+  int angle = x - pos;
+  int counter = 0;
+  if (angle >= 0)
+  {
+    for (counter = 0; counter <= angle; counter++)
+    {
+      myservo4.write(pos + counter);
+      delay(15);
+
+    }
+
+  }
+  if (angle < 0)
+  {
+    for (counter = 0; counter >= angle; counter--)
+    {
+      myservo4.write(pos + counter);
+      delay(15);
+
+    }
+
+  }
+
+}
+
+void servo5(int x)
+{
+  int pos = myservo5.read();
+  int angle = x - pos;
+  int counter = 0;
+  if (angle >= 0)
+  {
+    for (counter = 0; counter <= angle; counter++)
+    {
+      myservo5.write(pos + counter);
+      delay(10);
+
+    }
+
+  }
+  if (angle < 0)
+  {
+    for (counter = 0; counter >= angle; counter--)
+    {
+      myservo5.write(pos + counter);
+      delay(10);
+
+    }
+
+  }
+
+}
+
+void loop() {
+
+
+  while (Serial.available() > 0)
+  {  char date = Serial.read();
+   int a1;
+   int a2;
+   int a3;
+   int a4;
+   int a5;
+   switch (date)
+   {
+    case'a':
+    a1=Serial.parseInt();
+    
+   servo1(a1);
+    break;
+    case 'b':
+    a2=Serial.parseInt();
+       servo2(a2);
+    break;
+    case 'c':
+    a3=Serial.parseInt();
+   servo3(a3);
+    break;
+    case 'd':
+    a4=Serial.parseInt();
+   servo4(a4);
+    break;
+     case 'f':
+    a5=Serial.parseInt();
+   servo5(a5);
+    break;
+   case 'e':
+    servo5(5);
+    servo4(180);
+    servo3(90);
+    servo2(90);
+    
+    servo1(0);
+    servo5(90);
+    servo1(90);
+    servo2(90);
+    servo3(180);
+    servo4(180);
+    
+    break;
+    
+    }
+    
+  }
+ 
+
+}
+

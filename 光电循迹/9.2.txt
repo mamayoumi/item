@@ -1,0 +1,396 @@
+#include <MsTimer2.h>
+#define PIN_PWM 10//定义 PWM 输出引脚
+#define PIN_AIN2 11//定义正反转控制引脚
+#define PIN_AIN1 12//定义正反转控制引脚
+#define ENCODER_A 2 //编码器读取采用中断方式, 该引脚为第 0 个中断接口
+#define ENCODER_B 4
+
+#define PIN_PWMR 9//定义 PWM 输出引脚
+#define PIN_BIN4 7//定义正反转控制引脚
+#define PIN_BIN3 6//定义正反转控制引脚
+#define ENCODER_AR 3 //编码器读取采用中断方式, 该引脚为第 0 个中断接口
+#define ENCODER_BR 5  
+
+#define PERIOD 15
+
+#define Code1 A5
+#define Code2 A4
+#define Code3 A3
+#define Code4 A2
+#define Code5 A1
+#define Code6 A0
+#define Code7 13
+#define maxv 50
+
+int TARGET = 0;
+int TARGETR = 0;
+
+
+float velocity;
+float velocityR;
+long encoderVal;
+long encoderValR;//左编码器值
+float u = 0;
+float eI;
+float eII;
+float eIII;
+float uR = 0;
+float eIR;
+float eIIR;
+float eIIIR;
+float Kp;
+float Kpr;
+//函数功能：外部中断读取编码器数据，具有二倍频功能注意外部中断是跳变沿触发
+int Postition_PID(int Encoder, int Target ,float Kp)
+{
+  float output;
+  eI = Target - Encoder;
+  float  Ti = 7
+  , Td = 1, T = PERIOD;
+  float q0 = Kp * (1 + T / Ti + Td / T);
+  float q1 = -Kp * (1 + 2 * Td / T);
+  float q2 = Kp * Td / T;
+  u = u + q0 * eI + q1 * eII + q2 * eIII;
+  eIII = eII;
+  eII = eI;
+  if (u >= 255)
+    u = 255;
+  if (u <= -255)
+    u = -255;
+  output = u;
+  return (int)output;
+}
+int PostitionR_PID(int Encoder, int Target,float Kp)
+{
+  float output;
+  eIR = Target + Encoder;
+  float  Ti = 7, Td =1, T = PERIOD;
+  float q0R = Kp * (1 + T / Ti + Td / T);
+  float q1R = -Kp * (1 + 2 * Td / T);
+  float q2R = Kp * Td / T;
+  uR = uR + q0R * eIR + q1R * eIIR + q2R * eIIIR;
+  eIIIR = eIIR;
+  eIIR = eIR;
+  if (uR >= 255.0) {
+    uR = 255;
+  }
+  if (uR <= -255.0) 
+  {
+    uR = -255;
+  }
+  output = uR;
+  return (int)output;
+}
+
+void getEncoder(void)
+{
+  if (digitalRead(ENCODER_A) == LOW) { //如果是下降沿触发的中断
+    if (digitalRead(ENCODER_B) == LOW)
+    {
+      encoderVal--; //根据另外一相电平判定方向
+    }
+    else {
+      encoderVal++;
+    }
+  }
+  else
+  { //如果是上升沿触发的中断
+    if (digitalRead(ENCODER_B) == LOW) {
+      encoderVal++; //根据另外一相电平判定方向
+    }
+    else
+    {
+      encoderVal--;
+    }
+  }
+}
+void getEncoderR(void) {
+  if (digitalRead(ENCODER_AR) == LOW) { //如果是下降沿触发的中断
+    if (digitalRead(ENCODER_BR) == LOW)
+    {
+      encoderValR--; //根据另外一相电平判定方向
+    }
+    else {
+      encoderValR++;
+    }
+  }
+  else
+  { //如果是上升沿触发的中断
+    if (digitalRead(ENCODER_BR) == LOW) 
+      {
+      encoderValR++; //根据另外一相电平判定方向
+    }
+    else
+    {
+      encoderValR--;
+    }
+  }
+}
+float ReadCode() {
+  int total=0;
+  int num=0;
+  int a;
+  a=digitalRead(Code1);
+  if(a==1)  
+  {
+    total+=-4;
+    num++;
+  }
+  a=digitalRead(Code2);
+  if(a==1)  {
+    total+=-2.5;
+    num++;
+  }
+  a=digitalRead(Code3);
+  if(a==1)  {
+    total+=-1;
+    num++;
+  }
+  a=digitalRead(Code4);
+  if(a==1)  {
+    total+=0;
+    num++;
+  }
+  a=digitalRead(Code5);
+  if(a==1)  {
+    total+=1;
+    num++;
+  }
+  a=digitalRead(Code6);
+  if(a==1)  {
+    total+=2.5;
+    num++;
+  }
+  a=digitalRead(Code7);
+  if(a==1)  {
+    total+=4;
+    num++;
+  }
+  return (float)total/(float)num;
+  }
+void control(void)
+{
+  float encoder=ReadCode();
+    if(encoder==4)
+    {
+    TARGET=70;
+    TARGETR=15;
+    Kp=12;
+    Kpr=13;
+    }
+    if(encoder<4&&encoder>=3)
+    {
+    TARGET=60+5*encoder;
+    TARGETR=-15-encoder;
+    Kp=11;
+    Kpr=12;
+    }
+    if(encoder<3&&encoder>=2)
+    {
+    TARGET=50+5*encoder;
+    TARGETR=-10-6*encoder;
+    Kp=10;
+    Kpr=11;
+    }
+    if(encoder<2&&encoder>=1)
+    {
+    TARGET=45+10*encoder;
+    TARGETR=-35-8*encoder;
+    Kp=9;
+    Kpr=10;
+    }
+    if(encoder<1&&encoder>0)
+    {
+    TARGET=49+10*encoder;
+    TARGETR=-40-10*encoder;
+    Kp=7.5;
+    Kpr=8;
+    
+    }
+    if(encoder==0)
+    {
+    TARGET=50;
+    TARGETR=-50;
+    Kp=7.5;
+    Kpr=7.5;
+    }
+    if(encoder==-4)
+    {
+    TARGET=-15;
+    TARGETR=-70;
+    Kp=12;
+    Kpr=13;
+    }
+    if(encoder>-4&&encoder<=-3)
+    { 
+    TARGET=15-encoder;
+    TARGETR=-60+5*encoder;
+    Kp=11;
+    Kpr=12.5;
+    }
+    if(encoder>-3&&encoder<=-2)
+    {
+    TARGET=10-6*encoder;
+    TARGETR=-50+5*encoder;
+    Kp=10;
+    Kpr=11.5;
+    }
+    if(encoder>-2&&encoder<=-1)
+    {
+    TARGET=35-8*encoder;
+    TARGETR=-45+10*encoder;
+    Kp=9;
+    Kpr=10.5;
+    }
+    if(encoder>-1&&encoder<0)
+    {
+    TARGET=40-10*encoder;
+    TARGETR=-49+10*encoder;
+    Kp=7.5;
+    Kpr=8;
+    }
+    
+  
+  /*
+    int readcode=ReadCode();
+    if(readcode==4) {
+      TARGET=60;
+      TARGETR=60;
+    }
+    if(readcode==3) {
+      TARGET=60;
+      TARGETR=50;
+    }
+    if(readcode==5) {
+      TARGET=50;
+      TARGETR=60;
+    }
+    if(readcode==2) {
+      TARGET=60;
+      TARGETR=30;
+    }
+    if(readcode==6) {
+      TARGET=30;
+      TARGETR=60;
+    }
+    if(readcode==1) {
+      TARGET=10;
+      TARGETR=60;
+    }
+     if(readcode==7) {
+      TARGET=60;
+      TARGETR=10;
+    }
+  */
+  
+  velocity = (encoderVal / 780.0) * 3.1415 * 2.0 * (1000 / PERIOD);
+  encoderVal = 0;
+  int output = Postition_PID(velocity, -TARGET * maxv / 90,Kp);
+  if (output > 0)
+  {
+    digitalWrite(PIN_AIN2, LOW);
+    digitalWrite(PIN_AIN1, HIGH);
+    analogWrite(PIN_PWM, output);
+  }
+  else
+  {
+    digitalWrite(PIN_AIN2, HIGH);
+    digitalWrite(PIN_AIN1, LOW);
+    analogWrite(PIN_PWM, abs(output));
+  }
+
+  velocityR = (encoderValR / 780.0) * 3.1415 * 2.0 * (1000 / PERIOD);
+  encoderValR = 0;
+  int outputR = PostitionR_PID(velocityR, (TARGETR * maxv / 90),Kpr);
+  if (outputR > 0)
+  {
+    digitalWrite(PIN_BIN3, LOW);
+    digitalWrite(PIN_BIN4, HIGH);
+    analogWrite(PIN_PWMR, outputR);
+  }
+  else
+  {
+    digitalWrite(PIN_BIN3, HIGH);
+    digitalWrite(PIN_BIN4, LOW);
+    analogWrite(PIN_PWMR, abs(outputR));
+  }
+    /*Serial.print("PIN_PWM");
+    Serial.print(output);
+    Serial.print("    ");
+    Serial.print("PIN_PWMR:");
+    Serial.print(outputR);
+    Serial.print("\n");
+
+*/
+}
+
+void setup() {
+  //编码器引脚都设置输入
+  Serial.begin(9600);
+  TCCR1B = TCCR1B & B11111000 | B00000001;
+  pinMode(PIN_PWM, OUTPUT); //定义引脚为输出
+  pinMode(PIN_AIN2, OUTPUT);
+  pinMode(PIN_AIN1, OUTPUT);
+  pinMode(ENCODER_A, INPUT);
+  pinMode(ENCODER_B, INPUT);
+  //此处有错误，请找出并纠正
+  //下面这一条语句此处有错误，请找出并纠正
+  //使能编码器引脚外部中断 0，对应
+  //Arduino 引脚 2
+  pinMode(PIN_PWMR, OUTPUT); //定义引脚为输出
+  pinMode(PIN_BIN4, OUTPUT);
+  pinMode(PIN_BIN3, OUTPUT);
+
+  pinMode(ENCODER_AR, INPUT);
+  pinMode(ENCODER_BR, INPUT);
+  pinMode(Code1, INPUT);
+  pinMode(Code2, INPUT);
+  pinMode(Code3, INPUT);
+  pinMode(Code4, INPUT);
+  pinMode(Code5, INPUT);
+  pinMode(Code6, INPUT);
+  pinMode(Code7, INPUT);
+  //此处有错误，请找出并纠正
+  //下面这一条语句此处有错误，请找出并纠正
+
+  attachInterrupt(0, getEncoder, CHANGE);
+  attachInterrupt(1, getEncoderR, CHANGE);
+  
+  MsTimer2::set(PERIOD, control);
+  MsTimer2::start();
+
+}
+void loop() {
+
+  /*
+  Serial.print("velocity:");
+  Serial.print(velocity);
+  Serial.print("\t");
+  Serial.print("velocityR:");
+  Serial.print(velocityR);
+  Serial.print("\t\n");
+  */
+  int out1=digitalRead(Code1);
+  int out2=digitalRead(Code2);
+  int out3=digitalRead(Code3);
+  int out4=digitalRead(Code4);
+  int out5=digitalRead(Code5);
+  int out6=digitalRead(Code6);
+  int out7=digitalRead(Code7);
+  Serial.print(out1);
+  Serial.print("  ");
+  Serial.print(out2);
+  Serial.print("  ");
+  Serial.print(out3);
+  Serial.print("  ");
+  Serial.print(out4);
+  Serial.print("  ");
+  Serial.print(out5);
+  Serial.print("  ");
+  Serial.print(out6);
+  Serial.print("  ");
+  Serial.print(out7);
+  Serial.print("  \n");
+ 
+  
+}
